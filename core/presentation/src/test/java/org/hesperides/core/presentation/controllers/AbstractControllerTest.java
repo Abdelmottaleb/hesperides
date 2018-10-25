@@ -23,6 +23,7 @@ package org.hesperides.core.presentation.controllers;
 import org.hesperides.core.application.modules.ModuleUseCases;
 import org.hesperides.core.application.platforms.PlatformUseCases;
 import org.hesperides.core.application.technos.TechnoUseCases;
+import org.hesperides.core.application.workshopproperties.WorkshopPropertyUseCases;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -36,4 +37,6 @@ public abstract class AbstractControllerTest {
     protected TechnoUseCases technoUseCases;
     @MockBean
     protected PlatformUseCases platformUseCases;
+    @MockBean
+    protected WorkshopPropertyUseCases workshopPropertyUseCases;
 }

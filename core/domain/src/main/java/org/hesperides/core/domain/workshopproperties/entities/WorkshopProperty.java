@@ -7,4 +7,9 @@ public class WorkshopProperty {
     String key;
     String value;
     String keyValue;
+
+    public WorkshopProperty concatKeyValue() {
+        return new WorkshopProperty(key, value, key + value);
+
+    }
 }

@@ -22,10 +22,20 @@ package org.hesperides.core.domain.workshopproperties.commands;
 
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.commandhandling.model.AggregateIdentifier;
+import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.spring.stereotype.Aggregate;
+import org.hesperides.core.domain.CreateWorkshopPropertyCommand;
+import org.hesperides.core.domain.UpdateWorkshopPropertyCommand;
+import org.hesperides.core.domain.WorkshopPropertyCreatedEvent;
+import org.hesperides.core.domain.WorkshopPropertyUpdatedEvent;
+import org.hesperides.core.domain.workshopproperties.entities.WorkshopProperty;
 
 import java.io.Serializable;
+
+import static org.axonframework.commandhandling.model.AggregateLifecycle.apply;
+import static org.axonframework.commandhandling.model.AggregateLifecycle.isLive;
 
 @Slf4j
 @Aggregate
@@ -34,4 +44,38 @@ public class WorkshopPropertyAggregate implements Serializable {
 
     @AggregateIdentifier
     private String key;
+
+    /*** COMMAND HANDLERS ***/
+    @CommandHandler
+    public WorkshopPropertyAggregate(CreateWorkshopPropertyCommand command) {
+        log.debug("Applying createWorkshopPropertyCommand...");
+
+        //pré-traitement avant d'envoi dans l'EventBus
+        WorkshopProperty workshopProperty = command.getWorkshopProperty()
+                .concatKeyValue();
+        apply(new WorkshopPropertyCreatedEvent(workshopProperty, command.getUser()));
+    }
+
+    @CommandHandler
+    public void onUpdateWorkshopPropertyCommand(UpdateWorkshopPropertyCommand command) {
+        log.debug("Applying UpdateWorkshopPropertyCommand...");
+
+        WorkshopProperty workshopProperty = command.getWorkshopProperty()
+                .concatKeyValue();
+
+        //si tout est OK, la commande est validé (validation des données + pré traitement des données), on publie l'event sur l'EventBus => provoquer / déclancher l'event
+        apply(new WorkshopPropertyUpdatedEvent(workshopProperty, command.getUser()));
+    }
+
+    /*** EVENT HANDLERS ***/
+    @EventSourcingHandler
+    public void onWorkshopPropertyCreatedEvent(WorkshopPropertyCreatedEvent event) {
+        this.key = event.getWorkshopProperty().getKey();
+        log.debug("WorkshopProperty created (aggregate is live ? {})", isLive());
+    }
+
+    @EventSourcingHandler
+    public void onWorkshopPropertyUpdatedEvent(WorkshopPropertyUpdatedEvent event) {
+        log.debug("WorkshopProperty Updated (aggregate is live ? {})", isLive());
+    }
 }

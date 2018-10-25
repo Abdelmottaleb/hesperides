@@ -75,7 +75,7 @@ public class TechnosController extends AbstractController {
         TemplateContainer.Key technoKey = new Techno.Key(technoName, technoVersion, TemplateContainer.VersionType.workingcopy);
         technoUseCases.addTemplate(technoKey, templateInput.toDomainInstance(technoKey), fromAuthentication(authentication));
         TemplateIO templateOutput = technoUseCases.getTemplate(technoKey, templateInput.getName())
-                .map(TemplateIO::new)
+                .map(TemplateIO::new) //                 .map(technoUseCase -> new TemplateIO(technoUseCase))
                 .orElseThrow(() -> new TemplateNotFoundException(technoKey, templateInput.getName()));
 
         return ResponseEntity.created(technoKey.getURI()).body(templateOutput);

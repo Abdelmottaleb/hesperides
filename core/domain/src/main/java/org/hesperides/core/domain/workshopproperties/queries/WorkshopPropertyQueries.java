@@ -22,7 +22,13 @@ package org.hesperides.core.domain.workshopproperties.queries;
 
 import org.axonframework.queryhandling.QueryGateway;
 import org.hesperides.commons.axon.AxonQueries;
+import org.hesperides.core.domain.GetWorkshopPropertyQuery;
+import org.hesperides.core.domain.WorkshopPropertyAlreadyExistsQuery;
+import org.hesperides.core.domain.workshopproperties.entities.WorkshopProperty;
+import org.hesperides.core.domain.workshopproperties.queries.views.WorkshopPropertyView;
 import org.springframework.stereotype.Component;
+
+import java.util.Optional;
 
 @Component
 public class WorkshopPropertyQueries extends AxonQueries {
@@ -31,4 +37,12 @@ public class WorkshopPropertyQueries extends AxonQueries {
         super(queryGateway);
     }
 
+    public Boolean workshopPropertyExists(WorkshopProperty workshopProperty) {
+        return querySync(new WorkshopPropertyAlreadyExistsQuery(workshopProperty.getKey()), Boolean.class);
+    }
+
+    public Optional<WorkshopPropertyView> getOptionalWorkshopProperty(String workshopPropertyKey) {
+
+        return querySyncOptional(new GetWorkshopPropertyQuery(workshopPropertyKey), WorkshopPropertyView.class);
+    }
 }
